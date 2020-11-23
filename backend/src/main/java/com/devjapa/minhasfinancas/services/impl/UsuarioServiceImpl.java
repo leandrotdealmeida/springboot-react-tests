@@ -1,6 +1,5 @@
 package com.devjapa.minhasfinancas.services.impl;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.devjapa.minhasfinancas.domain.Usuario;
