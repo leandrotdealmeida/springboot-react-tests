@@ -1,5 +1,7 @@
 package com.devjapa.minhasfinancas.services;
 
+import static org.assertj.core.api.Assertions.offset;
+
 import java.util.Optional;
 
 import org.junit.jupiter.api.Assertions;
@@ -12,6 +14,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.devjapa.minhasfinancas.domain.Usuario;
+import com.devjapa.minhasfinancas.exceptions.ErroAutenticacao;
 import com.devjapa.minhasfinancas.exceptions.RegraNegocioException;
 import com.devjapa.minhasfinancas.repositories.UsuarioRepository;
 import com.devjapa.minhasfinancas.services.impl.UsuarioServiceImpl;
@@ -47,6 +50,36 @@ public class UsuarioServiceTest {
 			org.assertj.core.api.Assertions.assertThat(autenticar).isNotNull();
 		});
 
+	}
+	
+	@Test
+	public void deveLancarErroQuandoNaoEncontrarUsuarioCadastradoComEmailInformado() {
+		
+		Assertions.assertThrows(ErroAutenticacao.class, () -> {
+			// cenário
+			Mockito.when(repository.findByEmail(Mockito.anyString())).thenReturn(Optional.empty());
+
+			// ação
+			service.autenticar("email@email.com", "senha");
+
+		});
+		
+	}
+	
+	@Test
+	public void deveLancarErroQuandoSenhaNaoBater() {
+		
+		Assertions.assertThrows(ErroAutenticacao.class, () -> {
+			// cenário
+			String senha = "senha";
+			Usuario usuario = Usuario.builder().email("email@email.com").senha(senha).build();
+			Mockito.when(repository.findByEmail(Mockito.anyString())).thenReturn(Optional.of(usuario));
+
+			// ação
+			service.autenticar("email@email.com", "123");
+
+		});
+		
 	}
 
 	@Test
